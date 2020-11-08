@@ -1,18 +1,18 @@
-FROM frolvlad/alpine-python-machinelearning:latest
+FROM python:3.7
 
-RUN pip install --upgrade pip
+RUN pip install virtualenv
+ENV VIRTUAL_ENV=/venv
+RUN virtualenv venv -p python3
+ENV PATH="VIRTUAL_ENV/bin:$PATH"
 
 WORKDIR /app
+ADD . /app
 
-COPY . /app
-RUN apk add build-base
-RUN apk add --no-cache --virtual .build-deps g++ python3-dev libffi-dev openssl-dev && \
-    apk add --no-cache --update python3 && \
-    pip3 install --upgrade pip setuptools
-RUN pip3 install -r requirements.txt
+# Install dependencies
+RUN pip install -r requirements.txt
 
-EXPOSE 4000
+# Expose port 
+EXPOSE 5000
 
-ENTRYPOINT  ["python"]
-
-CMD ["app.py"]
+# Run the application:
+CMD ["python", "app.py"]
